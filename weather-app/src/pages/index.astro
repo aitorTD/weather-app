@@ -1,11 +1,51 @@
 ---
+title: 'Weather App'
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import './src/styles/global.css'
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html>
+  <head>
+	<meta charset="UTF-8">
+    <title>Weather App</title>
+  </head>
+  <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+	<header class="bg-blue-500 text-white p-4">
+	  <div class="flex justify-between items-center">
+		<h1 class="text-2xl font-semibold">Weather App</h1>
+		<button class="bg-white text-blue-500 px-4 py-2 rounded-lg">Ver Mapa</button>
+	  </div>
+	</header>
+  
+	<main class="container mx-auto p-8 flex-1">
+	  <section class="text-center">
+		<h2 class="text-3xl font-semibold">Clima en tu ubicación</h2>
+		<p id="location" class="mt-2 text-lg">Cargando...</p>
+  
+		<!-- Módulos del clima -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+		  <div class="bg-white p-6 rounded-lg shadow-md">
+			<h3 class="text-xl font-semibold">Temperatura</h3>
+			<p id="temperature" class="text-4xl font-bold">Cargando...</p>
+		  </div>
+		  <div class="bg-white p-6 rounded-lg shadow-md">
+			<h3 class="text-xl font-semibold">Sensación Térmica</h3>
+			<p id="feels-like" class="text-4xl font-bold">Cargando...</p>
+		  </div>
+		  <div class="bg-white p-6 rounded-lg shadow-md">
+			<h3 class="text-xl font-semibold">Humedad</h3>
+			<p id="humidity" class="text-4xl font-bold">Cargando...</p>
+		  </div>
+		</div>
+	  </section>
+	</main>
+  
+	<footer class="bg-gray-800 text-white p-4 text-center mt-auto">
+	  <p>&copy; 2025 Weather App. Todos los derechos reservados.</p>
+	</footer>
+  </body>
+</html>
