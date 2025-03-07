@@ -1,19 +1,22 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import WeatherCard from "../components/components.astro";
+import Location from "../components/Location.astro";
+import { weatherData } from '../components/Location.astro';  // Asegúrate de que esta ruta sea correcta
+import WeatherCard from "../components/Components.astro";
 
 const title = "Weather App";
+console.log(weatherData);
 ---
 
 <Layout {title}>
 	<section class="text-center">
 	  <h2 class="text-3xl font-semibold">Summary</h2>
-	  <p id="location" class="mt-2 text-lg">Loading...</p>
+	  <p id="location" class="mt-2 text-lg">{ weatherData?.city || 'Loading...'}</p>
   
 	  <!-- Módulos del clima -->
 	  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-		<WeatherCard title="Temperature" value="Loading..." />
-		<WeatherCard title="Pressure" value="Loading..." />
+		<WeatherCard title="Temperature" value="${{dsad}}" />
+		<WeatherCard title="Pressure" value="{{asdasd}}" />
 		<WeatherCard title="Humidity" value="Loading..." />
 		<WeatherCard title="Air Quality" value="Loading..." />
 		<WeatherCard title="Feels Like" value="Loading..." />
@@ -23,6 +26,8 @@ const title = "Weather App";
 		<WeatherCard title="Precipitation" value="Loading..." />
 		<WeatherCard title="Visibility" value="Loading..." />
 	  </div>
+
+	  <Location />
 
 	</section>
   </Layout>

@@ -1,0 +1,30 @@
+---
+const API_KEY = "739987c633f044bd9b2123525250703";
+const city = "Granada"; // Luego cambiaremos esto por coordenadas
+---
+
+<div id="weather" class="bg-white shadow-md rounded p-4 text-center">
+  <p>Cargando datos del clima...</p>
+</div>
+
+<script is:inline>
+  async function fetchWeather() {
+    try {
+      const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}&aqi=no`);
+      const data = await response.json();
+      document.getElementById("weather").innerHTML = `
+        <h3 class="text-xl font-semibold">${data.location.name}, ${data.location.country}</h3>
+        <p class="text-lg">🌡 ${data.current.temp_c}°C</p>
+        <p>💨 Sensación térmica: ${data.current.feelslike_c}°C</p>
+        <p>💧 Humedad: ${data.current.humidity}%</p>
+        <img src="${data.current.condition.icon}" alt="${data.current.condition.text}" class="mx-auto" />
+        <p>${data.current.condition.text}</p>
+      `;
+    } catch (error) {
+      console.error("Error obteniendo datos del clima:", error);
+      document.getElementById("weather").innerText = "Error cargando el clima.";
+    }
+  }
+
+  fetchWeather();
+</script>
