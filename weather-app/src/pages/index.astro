@@ -2,12 +2,43 @@
 import Layout from "../layouts/Layout.astro";
 import Location from "../components/Location.astro";
 
-const title = "Weather App";
+const title = "Weather App | Consulta el clima en tiempo real";
 ---
 
 <Layout {title}>
-	<section class="text-center">
-	  <h2 class="text-3xl font-semibold">Summary</h2>
-	  <Location />
-	</section>
-  </Layout>
+  <main class="min-h-screen dark:bg-gray-900 transition-colors duration-300">
+    <header class="py-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <div class="container mx-auto px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-center text-white">
+          Weather App
+          <span class="block text-lg md:text-xl mt-2 font-normal text-blue-100">
+            Consulta el clima en tiempo real
+          </span>
+        </h1>
+      </div>
+    </header>
+    
+    <section class="container mx-auto px-4 py-6">
+      <Location />
+    </section>
+    
+    <footer class="mt-12 py-6 bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+      <div class="container mx-auto px-4 text-center text-gray-600 dark:text-gray-300 text-sm">
+        <p>Datos proporcionados por <a href="https://www.weatherapi.com/" class="text-blue-600 dark:text-blue-400 hover:underline">Weather API</a></p>
+        <p class="mt-2">&copy; {new Date().getFullYear()} Weather App</p>
+      </div>
+    </footer>
+  </main>
+</Layout>
+
+<script>
+  // Initialize dark mode on page load
+  document.addEventListener("DOMContentLoaded", () => {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    }
+  });
+</script>

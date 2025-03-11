@@ -2,11 +2,9 @@
 import { preprocess } from "astro:schema";
 import WeatherCard from "../components/Components.astro";
 
-// Get the search query from URL parameters (if any)
 const url = new URL(Astro.request.url);
-const searchQuery = url.searchParams.get("location") || "Granada";
+const searchQuery = url.searchParams.get("location") || "";
 
-// Add loading state variables
 let location, weatherData, error;
 
 try {
@@ -15,7 +13,6 @@ try {
   weatherData = result.weatherData;
 } catch (e) {
   error = `No se encontró información para "${searchQuery}". Por favor, intenta con otra ciudad.`;
-  // Fallback to Granada if there's an error
   const result = await fetchWeatherData("Granada");
   location = result.location;
   weatherData = result.weatherData;
@@ -48,91 +45,147 @@ const weatherItems = [
   { label: "Visibilidad", key: "vis_km", unit: " km" },
 ];
 
-// API key for client-side use (consider using environment variables properly in production)
 const clientApiKey = process.env.WEATHER_API_KEY;
-
-// Format the last updated time
 const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated).toLocaleString('es-ES') : '';
 ---
 
-<div class="weather-app">
-  <form method="GET" action="" class="mb-6 relative">
-    <div class="flex">
-      <input
-        type="text"
-        name="location"
-        id="location-search"
-        placeholder="Buscar ciudad..."
-        value={searchQuery}
-        autocomplete="off"
-        class="flex-grow px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        type="submit"
-        class="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Buscar
+<div class="weather-app bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 min-h-screen p-6 transition-colors duration-300">
+  <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+    <form method="GET" action="" class="mb-8 relative">
+      <div class="flex shadow-md rounded-lg overflow-hidden">
+        <input
+          type="text"
+          name="location"
+          id="location-search"
+          placeholder="Buscar ciudad..."
+          value={searchQuery}
+          autocomplete="off"
+          class="flex-grow px-4 py-3 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+        />
+        <button
+          type="submit"
+          id="search-button"
+          class="bg-blue-500 text-white px-6 py-3 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+        >
+          Buscar
+        </button>
+      </div>
+      <ul
+        id="autocomplete-results"
+        class="absolute z-10 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-b-lg shadow-lg max-h-60 overflow-y-auto hidden"
+      ></ul>
+    </form>
+
+    {
+      error && (
+        <div
+          id="error-container"
+          class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 mb-6 rounded-r-lg"
+          role="alert"
+        >
+          <p>{error}</p>
+        </div>
+      )
+    }
+
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold flex items-center justify-center gap-2 text-center mb-2 text-gray-900 dark:text-white" id="location-heading">
+        Clima en {location}
+        <img id="weather-icon" src={weatherData.condition.icon} alt={weatherData.condition.text} class="ml-2 w-12 h-12" />
+      </h2>
+      
+      {lastUpdated && (
+        <p id="last-updated" class="text-sm text-gray-500 dark:text-gray-400">Última actualización: {lastUpdated}</p>
+      )}
+    </div>
+    
+    <div class="flex items-center justify-center gap-4 mb-8">
+      <button id="unit-toggle" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 font-medium">
+        °C / °F
       </button>
     </div>
-    <ul
-      id="autocomplete-results"
-      class="absolute z-10 w-full bg-white border border-gray-300 rounded-b shadow-lg max-h-60 overflow-y-auto hidden"
-    >
-    </ul>
-  </form>
-
-  {
-    error && (
-      <div
-        class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
-        role="alert"
-      >
-        <p>{error}</p>
-      </div>
-    )
-  }
-
-  <h2 class="text-3xl font-semibold">
-    Clima en {location}
-    <img src={weatherData.condition.icon} alt={weatherData.condition.text} />
-  </h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-    {
-      weatherItems.map((item) => (
-        <WeatherCard
-          title={item.label}
-          value={`${weatherData[item.key]} ${item.unit}`}
-        />
-      ))
-    }
+    
+    <div id="weather-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        weatherItems.map((item) => (
+          <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:-translate-y-1 transition-transform duration-200">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{item.label}</h3>
+            <p class="text-3xl font-bold mt-2 text-blue-600 dark:text-blue-400">{weatherData[item.key]}{item.unit}</p>
+          </div>
+        ))
+      }
+    </div>
   </div>
 </div>
 
-<script>
-  // Add loading indicators for search and autocomplete
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
-    const searchButton = form?.querySelector('button[type="submit"]');
-    const searchButtonText = searchButton?.textContent || "Buscar";
-
-    form?.addEventListener("submit", () => {
-      if (searchButton) {
-        searchButton.innerHTML =
-          '<span class="inline-block animate-spin mr-2">↻</span> Buscando...';
-      }
-      if (searchButton instanceof HTMLButtonElement)
-        searchButton.disabled = true;
-    });
-  });
-</script>
-
-<script define:vars={{ clientApiKey }}>
+<script define:vars={{ clientApiKey, weatherItems }}>
   document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("location-search");
     const resultsContainer = document.getElementById("autocomplete-results");
+    const form = document.querySelector("form");
+    const searchButton = document.getElementById("search-button");
+    const errorContainer = document.getElementById("error-container");
+    const locationHeading = document.getElementById("location-heading");
+    const weatherGrid = document.getElementById("weather-grid");
+    const lastUpdatedElement = document.getElementById("last-updated");
     let debounceTimer;
-
-    searchInput.addEventListener("input", function () {
+    
+    initGeolocation();
+    setupEventListeners();
+    
+    function initGeolocation() {
+      const url = new URL(window.location);
+      const hasLocationParam = url.searchParams.has("location");
+      
+      if (!hasLocationParam && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          handleGeolocationSuccess,
+          error => console.error("Geolocation error:", error)
+        );
+      }
+    }
+    
+    async function handleGeolocationSuccess(position) {
+      const { latitude, longitude } = position.coords;
+      
+      try {
+        if (searchButton) {
+          searchButton.innerHTML = '<span class="inline-block animate-spin mr-2">↻</span> Buscando...';
+          searchButton.disabled = true;
+        }
+        
+        const response = await fetch(
+          `https://api.weatherapi.com/v1/current.json?key=${clientApiKey}&q=${latitude},${longitude}&aqi=no`
+        );
+        
+        if (!response.ok) throw new Error("Error fetching weather for your location");
+        
+        const data = await response.json();
+        updateWeatherUI(data);
+        
+        if (searchInput) searchInput.value = data.location.name;
+        
+        const url = new URL(window.location);
+        url.searchParams.set("location", data.location.name);
+        window.history.pushState({}, "", url);
+      } catch (error) {
+        console.error("Error getting weather for user location:", error);
+      } finally {
+        if (searchButton) {
+          searchButton.innerHTML = "Buscar";
+          searchButton.disabled = false;
+        }
+      }
+    }
+    
+    function setupEventListeners() {
+      searchInput.addEventListener("input", handleSearchInput);
+      document.addEventListener("click", handleDocumentClick);
+      searchInput.addEventListener("focus", handleSearchFocus);
+      form.addEventListener("submit", handleFormSubmit);
+    }
+    
+    function handleSearchInput() {
       clearTimeout(debounceTimer);
 
       if (this.value.length < 2) {
@@ -141,34 +194,28 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
         return;
       }
 
-      debounceTimer = setTimeout(() => {
-        fetchCitySuggestions(this.value);
-      }, 300);
-    });
-
-    // Hide results when clicking outside
-    document.addEventListener("click", (e) => {
+      debounceTimer = setTimeout(() => fetchCitySuggestions(this.value), 300);
+    }
+    
+    function handleDocumentClick(e) {
       if (e.target !== searchInput && e.target !== resultsContainer) {
         resultsContainer.classList.add("hidden");
       }
-    });
-
-    // Show results when input is focused
-    searchInput.addEventListener("focus", function () {
+    }
+    
+    function handleSearchFocus() {
       if (this.value.length >= 2 && resultsContainer.children.length > 0) {
         resultsContainer.classList.remove("hidden");
       }
-    });
-
+    }
+    
     async function fetchCitySuggestions(query) {
       try {
         const response = await fetch(
           `https://api.weatherapi.com/v1/search.json?key=${clientApiKey}&q=${encodeURIComponent(query)}`
         );
 
-        if (!response.ok) {
-          throw new Error("Error fetching city suggestions");
-        }
+        if (!response.ok) throw new Error("Error fetching city suggestions");
 
         const cities = await response.json();
         displayCitySuggestions(cities);
@@ -200,26 +247,291 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
 
       resultsContainer.classList.remove("hidden");
     }
+    
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      const query = searchInput.value.trim();
+      if (!query) return;
+      
+      const url = new URL(window.location);
+      url.searchParams.set("location", query);
+      window.history.pushState({}, "", url);
+      
+      searchButton.innerHTML = '<span class="inline-block animate-spin mr-2">↻</span> Buscando...';
+      searchButton.disabled = true;
+      
+      try {
+        const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${clientApiKey}&q=${encodeURIComponent(query)}&aqi=no`);
+        
+        if (!response.ok) throw new Error(`Error al buscar "${query}"`);
+        
+        const data = await response.json();
+        updateWeatherUI(data, query);
+        
+        if (errorContainer) errorContainer.style.display = "none";
+      } catch (error) {
+        console.error("Error:", error);
+        
+        if (errorContainer) {
+          errorContainer.style.display = "block";
+          errorContainer.querySelector("p").textContent = `No se encontró información para "${query}". Por favor, intenta con otra ciudad.`;
+          
+          // Auto-dismiss error after 4 seconds
+          setTimeout(() => {
+            errorContainer.style.opacity = "0";
+            setTimeout(() => {
+              errorContainer.style.display = "none";
+              errorContainer.style.opacity = "1";
+            }, 300);
+          }, 4000);
+        } else {
+          // Create error container if it doesn't exist
+          const newErrorContainer = document.createElement("div");
+          newErrorContainer.id = "error-container";
+          newErrorContainer.className = "bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6";
+          newErrorContainer.setAttribute("role", "alert");
+          newErrorContainer.innerHTML = `<p>No se encontró información para "${query}". Por favor, intenta con otra ciudad.</p>`;
+          
+          form.insertAdjacentElement("afterend", newErrorContainer);
+          
+          // Auto-dismiss error after 4 seconds
+          setTimeout(() => {
+            newErrorContainer.style.opacity = "0";
+            setTimeout(() => {
+              newErrorContainer.style.display = "none";
+              newErrorContainer.style.opacity = "1";
+            }, 300);
+          }, 4000);
+        }
+      } finally {
+        searchButton.innerHTML = "Buscar";
+        searchButton.disabled = false;
+      }
+    }
+    
+    function updateWeatherUI(data) {
+      // Update with improved styling
+      locationHeading.innerHTML = `Clima en ${data.location.name} <img id="weather-icon" src="${data.current.condition.icon}" alt="${data.current.condition.text}" class="ml-2 w-12 h-12" />`;
+      
+      const lastUpdated = data.current.last_updated ? new Date(data.current.last_updated).toLocaleString('es-ES') : '';
+      if (lastUpdatedElement) {
+        lastUpdatedElement.textContent = `Última actualización: ${lastUpdated}`;
+      }
+      
+      weatherGrid.innerHTML = '';
+      weatherItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-700 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:-translate-y-1 transition-transform duration-200';
+        card.setAttribute('data-item', item.key);
+        
+        if (item.key.includes('temp') || item.key.includes('feelslike')) {
+          card.setAttribute('data-temp', data.current[item.key]);
+        }
+        
+        card.innerHTML = `
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">${item.label}</h3>
+          <p class="text-3xl font-bold mt-2 text-blue-600 dark:text-blue-400">${data.current[item.key]}${item.unit}</p>
+        `;
+        weatherGrid.appendChild(card);
+      });
+      
+      saveToRecentSearches(data.location.name);
+    }
+    
+    function saveToRecentSearches(locationName) {
+      let recentSearches = JSON.parse(localStorage.getItem('weatherAppRecentSearches') || '[]');
+      
+      if (!recentSearches.includes(locationName)) {
+        recentSearches.unshift(locationName);
+        recentSearches = recentSearches.slice(0, 5);
+        localStorage.setItem('weatherAppRecentSearches', JSON.stringify(recentSearches));
+      }
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const unitToggle = document.getElementById('unit-toggle');
+    let useMetric = true;
+    
+    if (unitToggle) {
+      unitToggle.addEventListener('click', () => {
+        useMetric = !useMetric;
+        
+        const tempCards = document.querySelectorAll('[data-temp]');
+        tempCards.forEach(card => {
+          const tempC = parseFloat(card.getAttribute('data-temp') || '0');
+          const displayTemp = useMetric ? tempC : (tempC * 9/5) + 32;
+          const unit = useMetric ? '°C' : '°F';
+          
+          const paragraph = card.querySelector('p');
+          if (paragraph) {
+            paragraph.textContent = `${displayTemp.toFixed(1)}${unit}`;
+          }
+        });
+        
+        unitToggle.textContent = useMetric ? '°C / °F' : '°F / °C';
+      });
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Check for dark mode preference
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    // Apply dark mode if needed
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    }
+    
+    // Create the theme toggle button
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'fixed top-6 right-6 p-3 rounded-full bg-white dark:bg-gray-700 shadow-lg z-50 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200';
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    
+    // Handle dark mode toggle
+    themeToggle.addEventListener('click', () => {
+      // Toggle dark class on html element
+      document.documentElement.classList.toggle('dark');
+      
+      // Update local storage
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('darkMode', isDark.toString());
+      
+      // Update button icon
+      themeToggle.innerHTML = isDark ? '☀️' : '🌙';
+      
+      // Force refresh all elements with dark mode classes
+      document.querySelectorAll('[class*="dark:"]').forEach(el => {
+        el.classList.remove('dark-mode-refresh');
+void (el as HTMLElement).offsetWidth; // Trigger reflow
+        el.classList.add('dark-mode-refresh');
+      });
+      
+      // Force update all weather cards
+      const cards = document.querySelectorAll('#weather-grid > div');
+      cards.forEach(card => {
+        if (isDark) {
+          card.classList.add('dark-card');
+          const h3Element = card.querySelector('h3');
+          if (h3Element) {
+            h3Element.classList.add('dark-text');
+            h3Element.classList.remove('text-gray-900');
+            h3Element.classList.add('text-white');
+          }
+        } else {
+          card.classList.remove('dark-card');
+          const h3Element = card.querySelector('h3');
+          if (h3Element) {
+            h3Element.classList.remove('dark-text');
+            h3Element.classList.add('text-gray-900');
+            h3Element.classList.remove('text-white');
+          }
+        }
+      });
+    });
+    
+    document.body.appendChild(themeToggle);
   });
 </script>
 
 <style>
-  /* Make the weather app container responsive with proper padding */
   .weather-app {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1rem;
   }
   
-  /* Improve autocomplete on mobile */
   @media (max-width: 640px) {
     #autocomplete-results {
       max-height: 40vh;
     }
   }
   
-  /* Existing styles */
   #autocomplete-results li:not(:last-child) {
     border-bottom: 1px solid #e2e8f0;
   }
+  
+  /* Improved Dark mode styles */
+  :global(.dark) {
+    --bg-color: #1a202c;
+    --text-color: #f7fafc;
+    --card-bg: #2d3748;
+    --border-color: #4a5568;
+    color-scheme: dark;
+  }
+  
+  :global(html.dark) {
+    color-scheme: dark;
+  }
+  
+  :global(body) {
+    background-color: var(--bg-color, white);
+    color: var(--text-color, #1a202c);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Fix for dark mode cards */
+  :global(.dark .bg-white) {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+  
+  :global(.dark h3) {
+    color: var(--text-color) !important;
+  }
+  
+  /* Fix for dark mode text colors */
+  :global(.dark .text-gray-900) {
+    color: var(--text-color) !important;
+  }
+  
+  /* Fix for dark mode in autocomplete results */
+  :global(.dark #autocomplete-results) {
+    background-color: #2d3748 !important;
+    border-color: #4a5568 !important;
+  }
+  
+  :global(.dark #autocomplete-results li) {
+    color: #f7fafc !important;
+  }
+  
+  :global(.dark #autocomplete-results li:hover) {
+    background-color: #4a5568 !important;
+  }
+  
+  /* Add animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  #weather-grid > div {
+    animation: fadeIn 0.5s ease-out;
+    animation-fill-mode: both;
+  }
+  
+  #weather-grid > div:nth-child(1) { animation-delay: 0.1s; }
+  #weather-grid > div:nth-child(2) { animation-delay: 0.2s; }
+  #weather-grid > div:nth-child(3) { animation-delay: 0.3s; }
+  #weather-grid > div:nth-child(4) { animation-delay: 0.4s; }
+  #weather-grid > div:nth-child(5) { animation-delay: 0.5s; }
+  #weather-grid > div:nth-child(6) { animation-delay: 0.6s; }
+  #weather-grid > div:nth-child(7) { animation-delay: 0.7s; }
+
+  #weather-icon {
+    vertical-align: middle;
+    display: inline-block;
+  }
+
+  #error-container {
+    transition: opacity 0.3s ease-out;
+  }
+
 </style>
