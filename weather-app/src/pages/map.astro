@@ -34,7 +34,7 @@ try {
 
 <Layout {title}>
   <div class="container mx-auto px-4 py-6">
-    <h1 class="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-900">
       Mapa del Tiempo: {locationName}
     </h1>
     
@@ -43,23 +43,23 @@ try {
     
     <!-- Weather info for the selected location -->
     {weatherData && (
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white flex items-center">
+      <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900 flex items-center">
           Clima actual en {locationName}
           <img src={weatherData.condition.icon} alt={weatherData.condition.text} class="ml-2 w-10 h-10" />
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="text-center p-3 bg-blue-50 dark:bg-gray-700 rounded-lg">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Temperatura</p>
-            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{weatherData.temp_c}°C</p>
+          <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Temperatura</p>
+            <p class="text-2xl font-bold text-blue-600">{weatherData.temp_c}°C</p>
           </div>
-          <div class="text-center p-3 bg-blue-50 dark:bg-gray-700 rounded-lg">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Condición</p>
-            <p class="text-lg font-medium text-gray-800 dark:text-gray-200">{weatherData.condition.text}</p>
+          <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Condición</p>
+            <p class="text-lg font-medium text-gray-800">{weatherData.condition.text}</p>
           </div>
-          <div class="text-center p-3 bg-blue-50 dark:bg-gray-700 rounded-lg">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Viento</p>
-            <p class="text-lg font-medium text-gray-800 dark:text-gray-200">{weatherData.wind_kph} km/h</p>
+          <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Viento</p>
+            <p class="text-lg font-medium text-gray-800">{weatherData.wind_kph} km/h</p>
           </div>
         </div>
       </div>

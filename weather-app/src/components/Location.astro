@@ -49,8 +49,8 @@ const clientApiKey = process.env.WEATHER_API_KEY;
 const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated).toLocaleString('es-ES') : '';
 ---
 
-<div class="weather-app bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 min-h-screen p-6 transition-colors duration-300">
-  <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+<div class="weather-app bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6 transition-colors duration-300">
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 mb-8">
     <form method="GET" action="" class="mb-8 relative">
       <div class="flex shadow-md rounded-lg overflow-hidden">
         <input
@@ -60,7 +60,7 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
           placeholder="Buscar ciudad..."
           value={searchQuery}
           autocomplete="off"
-          class="flex-grow px-4 py-3 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          class="flex-grow px-4 py-3 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
@@ -72,7 +72,7 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
       </div>
       <ul
         id="autocomplete-results"
-        class="absolute z-10 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-b-lg shadow-lg max-h-60 overflow-y-auto hidden"
+        class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg shadow-lg max-h-60 overflow-y-auto hidden"
       ></ul>
     </form>
 
@@ -80,7 +80,7 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
       error && (
         <div
           id="error-container"
-          class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 mb-6 rounded-r-lg"
+          class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg"
           role="alert"
         >
           <p>{error}</p>
@@ -89,18 +89,18 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
     }
 
     <div class="text-center mb-8">
-      <h2 class="text-3xl font-bold flex items-center justify-center gap-2 text-center mb-2 text-gray-900 dark:text-white" id="location-heading">
+      <h2 class="text-3xl font-bold flex items-center justify-center gap-2 text-center mb-2 text-gray-900" id="location-heading">
         Clima en {location}
         <img id="weather-icon" src={weatherData.condition.icon} alt={weatherData.condition.text} class="ml-2 w-12 h-12" />
       </h2>
       
       {lastUpdated && (
-        <p id="last-updated" class="text-sm text-gray-500 dark:text-gray-400">Última actualización: {lastUpdated}</p>
+        <p id="last-updated" class="text-sm text-gray-500">Última actualización: {lastUpdated}</p>
       )}
     </div>
     
     <div class="flex items-center justify-center gap-4 mb-8">
-      <button id="unit-toggle" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 font-medium">
+      <button id="unit-toggle" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium">
         °C / °F
       </button>
     </div>
@@ -108,9 +108,9 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
     <div id="weather-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {
         weatherItems.map((item) => (
-          <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:-translate-y-1 transition-transform duration-200">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{item.label}</h3>
-            <p class="text-3xl font-bold mt-2 text-blue-600 dark:text-blue-400">{weatherData[item.key]}{item.unit}</p>
+          <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:-translate-y-1 transition-transform duration-200">
+            <h3 class="text-lg font-medium text-gray-900">{item.label}</h3>
+            <p class="text-3xl font-bold mt-2 text-blue-600">{weatherData[item.key]}{item.unit}</p>
           </div>
         ))
       }
@@ -322,7 +322,7 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
       weatherGrid.innerHTML = '';
       weatherItems.forEach(item => {
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-gray-700 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:-translate-y-1 transition-transform duration-200';
+        card.className = 'bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:-translate-y-1 transition-transform duration-200';
         card.setAttribute('data-item', item.key);
         
         if (item.key.includes('temp') || item.key.includes('feelslike')) {
@@ -330,8 +330,8 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
         }
         
         card.innerHTML = `
-          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">${item.label}</h3>
-          <p class="text-3xl font-bold mt-2 text-blue-600 dark:text-blue-400">${data.current[item.key]}${item.unit}</p>
+          <h3 class="text-lg font-medium text-gray-900">${item.label}</h3>
+          <p class="text-3xl font-bold mt-2 text-blue-600">${data.current[item.key]}${item.unit}</p>
         `;
         weatherGrid.appendChild(card);
       });
@@ -378,69 +378,6 @@ const lastUpdated = weatherData.last_updated ? new Date(weatherData.last_updated
   });
 </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Check for dark mode preference
-    const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
-      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
-    // Apply dark mode if needed
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    }
-    
-    // Create the theme toggle button
-    const themeToggle = document.createElement('button');
-    themeToggle.className = 'fixed top-6 right-6 p-3 rounded-full bg-white dark:bg-gray-700 shadow-lg z-50 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200';
-    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
-    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
-    
-    // Handle dark mode toggle
-    themeToggle.addEventListener('click', () => {
-      // Toggle dark class on html element
-      document.documentElement.classList.toggle('dark');
-      
-      // Update local storage
-      const isDark = document.documentElement.classList.contains('dark');
-      localStorage.setItem('darkMode', isDark.toString());
-      
-      // Update button icon
-      themeToggle.innerHTML = isDark ? '☀️' : '🌙';
-      
-      // Force refresh all elements with dark mode classes
-      document.querySelectorAll('[class*="dark:"]').forEach(el => {
-        el.classList.remove('dark-mode-refresh');
-void (el as HTMLElement).offsetWidth; // Trigger reflow
-        el.classList.add('dark-mode-refresh');
-      });
-      
-      // Force update all weather cards
-      const cards = document.querySelectorAll('#weather-grid > div');
-      cards.forEach(card => {
-        if (isDark) {
-          card.classList.add('dark-card');
-          const h3Element = card.querySelector('h3');
-          if (h3Element) {
-            h3Element.classList.add('dark-text');
-            h3Element.classList.remove('text-gray-900');
-            h3Element.classList.add('text-white');
-          }
-        } else {
-          card.classList.remove('dark-card');
-          const h3Element = card.querySelector('h3');
-          if (h3Element) {
-            h3Element.classList.remove('dark-text');
-            h3Element.classList.add('text-gray-900');
-            h3Element.classList.remove('text-white');
-          }
-        }
-      });
-    });
-    
-    document.body.appendChild(themeToggle);
-  });
-</script>
-
 <style>
   .weather-app {
     max-width: 1200px;
@@ -456,54 +393,6 @@ void (el as HTMLElement).offsetWidth; // Trigger reflow
   
   #autocomplete-results li:not(:last-child) {
     border-bottom: 1px solid #e2e8f0;
-  }
-  
-  /* Improved Dark mode styles */
-  :global(.dark) {
-    --bg-color: #1a202c;
-    --text-color: #f7fafc;
-    --card-bg: #2d3748;
-    --border-color: #4a5568;
-    color-scheme: dark;
-  }
-  
-  :global(html.dark) {
-    color-scheme: dark;
-  }
-  
-  :global(body) {
-    background-color: var(--bg-color, white);
-    color: var(--text-color, #1a202c);
-    transition: background-color 0.3s, color 0.3s;
-  }
-  
-  /* Fix for dark mode cards */
-  :global(.dark .bg-white) {
-    background-color: var(--card-bg) !important;
-    color: var(--text-color) !important;
-  }
-  
-  :global(.dark h3) {
-    color: var(--text-color) !important;
-  }
-  
-  /* Fix for dark mode text colors */
-  :global(.dark .text-gray-900) {
-    color: var(--text-color) !important;
-  }
-  
-  /* Fix for dark mode in autocomplete results */
-  :global(.dark #autocomplete-results) {
-    background-color: #2d3748 !important;
-    border-color: #4a5568 !important;
-  }
-  
-  :global(.dark #autocomplete-results li) {
-    color: #f7fafc !important;
-  }
-  
-  :global(.dark #autocomplete-results li:hover) {
-    background-color: #4a5568 !important;
   }
   
   /* Add animations */
@@ -533,5 +422,4 @@ void (el as HTMLElement).offsetWidth; // Trigger reflow
   #error-container {
     transition: opacity 0.3s ease-out;
   }
-
 </style>
