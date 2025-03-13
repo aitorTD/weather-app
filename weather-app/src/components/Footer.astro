@@ -1,5 +1,8 @@
 <!-- src/components/Footer.astro -->
 
 <footer class="bg-stone-800 text-white p-4 text-center mt-auto">
-    <p>&copy; 2025 Weather App. Todos los derechos reservados.</p>
+    <p>&copy; {new Date().getFullYear()} Weather App. Todos los derechos reservados.</p>
+    <div class="container mx-auto px-4 text-center text-white-600 text-sm">
+        <p>Datos proporcionados por <a href="https://www.weatherapi.com/" class="text-blue-600 hover:underline">Weather API</a></p>
+      </div>
 </footer>
